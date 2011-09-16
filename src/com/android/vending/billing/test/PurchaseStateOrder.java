@@ -3,7 +3,7 @@ package com.android.vending.billing.test;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PurchaseStateOrder {
+public class PurchaseStateOrder implements Cloneable {
 	public static final int STATE_PURCHASED = 0;
 	public static final int STATE_CANCELED = 1;
 	public static final int STATE_REFUNDED = 2;
@@ -15,6 +15,10 @@ public class PurchaseStateOrder {
 	private long purchaseTime;
 	private int purchaseState;
 	private String developerPayload;
+	
+	public PurchaseStateOrder() {
+		purchaseTime = System.currentTimeMillis();
+	}
 	
 	public String getNotificationId() {
 		return notificationId;
@@ -85,5 +89,12 @@ public class PurchaseStateOrder {
 		return jsonOrder;
 	}
 	
-
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			return new PurchaseStateOrder();
+		}
+	}
 }

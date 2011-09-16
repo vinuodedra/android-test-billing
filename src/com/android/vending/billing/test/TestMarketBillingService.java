@@ -70,9 +70,13 @@ public class TestMarketBillingService implements IMarketBillingService {
 			{
 				if (!bundle.containsKey("ITEM_ID"))
 					throw new Error("ITEM_ID is required");
+
+				String developerPayload = bundle.getString("DEVELOPER_PAYLOAD");
+				String itemId = bundle.getString("ITEM_ID");	
+				String packageName = bundle.getString("PACKAGE_NAME");
 				
 				Bundle response = createSyncResponse(ResponseCode.RESULT_OK);
-				response.putParcelable("PURCHASE_INTENT", createMarketScreenPendingIntent());
+				response.putParcelable("PURCHASE_INTENT", createMarketScreenPendingIntent(itemId, developerPayload, packageName));
 				return response;
 			}
 			case GET_PURCHASE_INFORMATION:
@@ -81,18 +85,38 @@ public class TestMarketBillingService implements IMarketBillingService {
 					throw new Error("NONCE is required");
 				if (!bundle.containsKey("NOTIFY_IDS"))
 					throw new Error("NOTIFY_IDS is required");
+				
+				long nonce = bundle.getLong("NONCE");
+				String[] notifyIds = bundle.getStringArray("NOTIFY_IDS");
+				
+				// @todo : multiple ids
+				PurchaseStateOrder order = OrderNotificationRepository.getInstance().get(notifyIds[0]);
+				
+				// @todo: handle order is not found
+				
+				PurchaseState state = new PurchaseState();
+				state.setNonce(nonce);
+				state.setOrder(order);
+				broadcastPurchaseStateChangeIntent(state);
+				
 				return createSyncResponse(ResponseCode.RESULT_OK);
 			}
 			case CONFIRM_NOTIFICATIONS:
 			{
 				if (!bundle.containsKey("NOTIFY_IDS"))
 					throw new Error("NOTIFY_IDS is required");
+				
+				// @todo : implement confirmation
+				
 				return createSyncResponse(ResponseCode.RESULT_OK);
 			}
 			case RESTORE_TRANSACTIONS:
 			{
 				if (!bundle.containsKey("NONCE"))
 					throw new Error("NONCE is required");
+				
+				// @todo : implement RESTORE_TRANSACTIONS
+				
 				return createSyncResponse(ResponseCode.RESULT_OK);
 			}
 			default:
@@ -118,12 +142,6 @@ public class TestMarketBillingService implements IMarketBillingService {
 		context.sendBroadcast(intent);
 	}
 	
-	private void broadcastAppNotificationIntent(String notificationId) {
-		Intent intent = new Intent("com.android.vending.billing.IN_APP_NOTIFY");
-		intent.putExtra("notification_id", notificationId);
-		context.sendBroadcast(intent);		
-	}
-	
 	private void broadcastPurchaseStateChangeIntent(PurchaseState purchaseState) {
 		String purchaseDataJson = purchaseState.toJson();
 		Intent intent = new Intent("com.android.vending.billing.PURCHASE_STATE_CHANGED");
@@ -132,8 +150,11 @@ public class TestMarketBillingService implements IMarketBillingService {
 		context.sendBroadcast(intent);	
 	}
 	
-	private PendingIntent createMarketScreenPendingIntent() {		
+	private PendingIntent createMarketScreenPendingIntent(String itemId, String developerPayload, String packageName) {		
 		Intent intent = new Intent(context, TestPaymentScreenActivity.class);
+		intent.putExtra(TestPaymentScreenActivity.DEVELOPER_PAYLOAD_INTENT_KEY, developerPayload);
+		intent.putExtra(TestPaymentScreenActivity.ITEM_ID_INTENT_KEY, itemId);
+		intent.putExtra(TestPaymentScreenActivity.PACKAGE_NAME_INTENT_KEY, packageName);
 		return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 	}
 	
