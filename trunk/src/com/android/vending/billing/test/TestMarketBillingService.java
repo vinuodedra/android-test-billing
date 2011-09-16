@@ -1,7 +1,5 @@
 package com.android.vending.billing.test;
 
-import java.util.UUID;
-
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -135,8 +133,8 @@ public class TestMarketBillingService implements IMarketBillingService {
 	}
 	
 	private PendingIntent createMarketScreenPendingIntent() {		
-		Intent intent = new Intent(context, TestPaymentScreenService.class);
-		return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+		Intent intent = new Intent(context, TestPaymentScreenActivity.class);
+		return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 	}
 	
 }

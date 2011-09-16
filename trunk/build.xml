@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<project name="AndroidTestBilling" default="package">
+  <property name="version" value="0.1" />
+  <target name="package">
+    <jar destfile="android-test-billing-${version}.jar" basedir="bin/">
+      <include name="com/**" />
+    </jar>
+  </target>
+</project>
