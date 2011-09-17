@@ -16,45 +16,15 @@ public class TestMarketBillingService implements IMarketBillingService {
 		RESTORE_TRANSACTIONS,
 	}
 	
-	enum ResponseCode {
-		RESULT_OK(0),	
-		RESULT_USER_CANCELED(1),	
-		RESULT_SERVICE_UNAVAILABLE(2),	
-		RESULT_BILLING_UNAVAILABLE(3),	
-		RESULT_ITEM_UNAVAILABLE(4),	
-		RESULT_DEVELOPER_ERROR(5),	
-		RESULT_ERROR(6);	
-		
-		private final int value;  
-
-		ResponseCode(int value) {
-	        this.value = value;
-	    }
-
-	    public int getValue() { 
-	        return value; 
-	    }
-	    public static ResponseCode createByValue(int value) {
-	    	for (ResponseCode code : values())
-	            if (code.getValue() == value)
-	                return code;
-	        throw new Error("unknown ResponseCode value");
-	    }
-	}
-	
 	private Context context;
+	private ResponseIntentFactory responseIntentFactory;
 	
 	public TestMarketBillingService(Context context) {
 		this.context = context;
+		this.responseIntentFactory = new ResponseIntentFactory();
 	}
 	
 	public Bundle sendBillingRequest(Bundle bundle) {
-		Bundle response = processBillingRequest(bundle);
-		broadcastResponseCodeIntent(response);
-		return response;
-	}
-	
-	private Bundle processBillingRequest(Bundle bundle) {
 		if (!bundle.containsKey("BILLING_REQUEST"))
 			throw new Error("BILLING_REQUEST is required");
 		if (!bundle.containsKey("API_VERSION"))
@@ -62,10 +32,15 @@ public class TestMarketBillingService implements IMarketBillingService {
 		if (!bundle.containsKey("PACKAGE_NAME"))
 			throw new Error("PACKAGE_NAME is required");
 		
+		Bundle response = null;
+		
 		BillingRequestType billingRequestType = BillingRequestType.valueOf((String)bundle.get("BILLING_REQUEST"));
 		switch (billingRequestType) {
 			case CHECK_BILLING_SUPPORTED:
-				return createSyncResponse(ResponseCode.RESULT_OK);
+			{
+				response = createSyncResponse(ResponseCode.RESULT_OK);
+				break;
+			}
 			case REQUEST_PURCHASE:
 			{
 				if (!bundle.containsKey("ITEM_ID"))
@@ -75,9 +50,10 @@ public class TestMarketBillingService implements IMarketBillingService {
 				String itemId = bundle.getString("ITEM_ID");	
 				String packageName = bundle.getString("PACKAGE_NAME");
 				
-				Bundle response = createSyncResponse(ResponseCode.RESULT_OK);
-				response.putParcelable("PURCHASE_INTENT", createMarketScreenPendingIntent(itemId, developerPayload, packageName));
-				return response;
+				long requestId = System.currentTimeMillis();
+				response = createSyncResponse(ResponseCode.RESULT_OK, requestId);
+				response.putParcelable("PURCHASE_INTENT", createMarketScreenPendingIntent(itemId, developerPayload, packageName, requestId));
+				break;
 			}
 			case GET_PURCHASE_INFORMATION:
 			{
@@ -89,39 +65,53 @@ public class TestMarketBillingService implements IMarketBillingService {
 				long nonce = bundle.getLong("NONCE");
 				String[] notifyIds = bundle.getStringArray("NOTIFY_IDS");
 				
-				// @todo : multiple ids
-				PurchaseStateOrder order = OrderNotificationRepository.getInstance().get(notifyIds[0]);
-				
-				// @todo: handle order is not found
-				
 				PurchaseState state = new PurchaseState();
 				state.setNonce(nonce);
-				state.setOrder(order);
-				broadcastPurchaseStateChangeIntent(state);
+				for (String notifyId : notifyIds) {
+					PurchaseStateOrder[] orders = OrderNotificationRepository.getInstance().get(notifyId);
+					for (PurchaseStateOrder order : orders)
+						state.addOrder(order);
+				}					
+				broadcastPurchaseStateChangeIntent(state);					
 				
-				return createSyncResponse(ResponseCode.RESULT_OK);
+				response = createSyncResponse(ResponseCode.RESULT_OK);
+				break;
 			}
 			case CONFIRM_NOTIFICATIONS:
 			{
 				if (!bundle.containsKey("NOTIFY_IDS"))
 					throw new Error("NOTIFY_IDS is required");
 				
-				// @todo : implement confirmation
+				String[] notifyIds = bundle.getStringArray("NOTIFY_IDS");
+				for (String notifyId : notifyIds) {
+					OrderNotificationRepository.getInstance().remove(notifyId);
+				}
 				
-				return createSyncResponse(ResponseCode.RESULT_OK);
+				response = createSyncResponse(ResponseCode.RESULT_OK);
+				break;
 			}
 			case RESTORE_TRANSACTIONS:
 			{
 				if (!bundle.containsKey("NONCE"))
 					throw new Error("NONCE is required");
 				
-				// @todo : implement RESTORE_TRANSACTIONS
+				PurchaseStateOrder[] orders = PurchaseStateOrderRepository.getInstance().getUserManagedPurchases();
+				String notificationId = OrderNotificationRepository.getInstance().add(orders);
+				context.sendBroadcast(responseIntentFactory.createAppNotificationIntent(notificationId));
 				
-				return createSyncResponse(ResponseCode.RESULT_OK);
+				response = createSyncResponse(ResponseCode.RESULT_OK);
+				break;
 			}
 			default:
-				throw new Error("unknown BillingRequestType");
+			{
+				response = createSyncResponse(ResponseCode.RESULT_DEVELOPER_ERROR);
+				break;
+			}
 		}
+		
+		if (billingRequestType != BillingRequestType.REQUEST_PURCHASE)
+			context.sendBroadcast(responseIntentFactory.createResponseCodeIntent(response));
+		return response;
 	}
 	
 	private Bundle createSyncResponse(ResponseCode code) {
@@ -135,13 +125,6 @@ public class TestMarketBillingService implements IMarketBillingService {
 		return bundle;
 	}
 	
-	private void broadcastResponseCodeIntent(Bundle response) {		
-		Intent intent = new Intent("com.android.vending.billing.RESPONSE_CODE");
-		intent.putExtra("request_id", response.getLong("REQUEST_ID"));
-		intent.putExtra("response_code", response.getInt("RESPONSE_CODE"));
-		context.sendBroadcast(intent);
-	}
-	
 	private void broadcastPurchaseStateChangeIntent(PurchaseState purchaseState) {
 		String purchaseDataJson = purchaseState.toJson();
 		Intent intent = new Intent("com.android.vending.billing.PURCHASE_STATE_CHANGED");
@@ -150,11 +133,12 @@ public class TestMarketBillingService implements IMarketBillingService {
 		context.sendBroadcast(intent);	
 	}
 	
-	private PendingIntent createMarketScreenPendingIntent(String itemId, String developerPayload, String packageName) {		
+	private PendingIntent createMarketScreenPendingIntent(String itemId, String developerPayload, String packageName, long requestId) {		
 		Intent intent = new Intent(context, TestPaymentScreenActivity.class);
 		intent.putExtra(TestPaymentScreenActivity.DEVELOPER_PAYLOAD_INTENT_KEY, developerPayload);
 		intent.putExtra(TestPaymentScreenActivity.ITEM_ID_INTENT_KEY, itemId);
 		intent.putExtra(TestPaymentScreenActivity.PACKAGE_NAME_INTENT_KEY, packageName);
+		intent.putExtra(TestPaymentScreenActivity.REQUEST_ID_INTENT_KEY, requestId);
 		return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 	}
 	
