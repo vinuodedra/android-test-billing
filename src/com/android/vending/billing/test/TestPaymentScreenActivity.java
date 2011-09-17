@@ -1,6 +1,8 @@
 package com.android.vending.billing.test;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -56,12 +58,26 @@ public class TestPaymentScreenActivity extends Activity {
 		this.sendBroadcast(responseIntentFactory.createAppNotificationIntent(notificationId));	
 	}
 	
+	private AlertDialog createOrderSelectionDialog(android.content.DialogInterface.OnClickListener listener) {
+		PurchaseStateOrder[] orders = PurchaseStateOrderRepository.getInstance().getAllOrders();
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("select an order");
+		
+		String[] orderIds = new String[orders.length];
+		for (int i = 0; i < orders.length; i++) {
+			orderIds[i] = orders[i].getOrderId() + " - " + orders[i].getProductId();
+		}
+		builder.setSingleChoiceItems(orderIds, -1, listener);		
+		return builder.create();
+	}	
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LinearLayout layout = new LinearLayout(this);
         
-        addTestButton(layout, "buy item successfully", new OnClickListener() {
+        addTestButton(layout, "buy item", new OnClickListener() {
 			public void onClick(View v) {
 				PurchaseStateOrder order = createOrder();
 				order.setPurchaseState(PurchaseStateOrder.STATE_PURCHASED);
@@ -69,7 +85,7 @@ public class TestPaymentScreenActivity extends Activity {
 				notifyAboutOrder(order);
 			}
 		});        
-        addTestButton(layout, "cancel buying process", new OnClickListener() {
+        addTestButton(layout, "cancel the order", new OnClickListener() {
 			public void onClick(View v) {
 				PurchaseStateOrder order = createOrder();
 				order.setPurchaseState(PurchaseStateOrder.STATE_CANCELED);
@@ -77,16 +93,20 @@ public class TestPaymentScreenActivity extends Activity {
 				notifyAboutOrder(order);
 			}
 		});        
-        addTestButton(layout, "refund order", new OnClickListener() {
+        addTestButton(layout, "refund the order", new OnClickListener() {
 			public void onClick(View v) {
-				// TODO: select order id in a dialog
-				String orderId = "";
-				
-				PurchaseStateOrder order = PurchaseStateOrderRepository.getInstance().get(orderId);
-				if (order != null) {
-					order.setPurchaseState(PurchaseStateOrder.STATE_REFUNDED);				
-					notifyAboutOrder(order);
-				}
+				AlertDialog dialog = createOrderSelectionDialog(new android.content.DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {						
+						PurchaseStateOrder[] orders = PurchaseStateOrderRepository.getInstance().getAllOrders();
+						PurchaseStateOrder order = orders[which];
+						if (order != null) {
+							order.setPurchaseState(PurchaseStateOrder.STATE_REFUNDED);				
+							notifyAboutOrder(order);
+						}
+					}
+				});
+				dialog.show();
 			}
 		});        
         addTestButton(layout, "service unavailable", new OnClickListener() {
@@ -94,8 +114,11 @@ public class TestPaymentScreenActivity extends Activity {
 				v.getContext().sendBroadcast(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_SERVICE_UNAVAILABLE));
 			}
 		});        
-        
-        // TODO: handle back button with RESULT_USER_CANCELED
+        addTestButton(layout, "abandon checkout", new OnClickListener() {
+			public void onClick(View v) {
+				v.getContext().sendBroadcast(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_USER_CANCELED));
+			}
+		});        
         
         this.setContentView(layout);
     }
