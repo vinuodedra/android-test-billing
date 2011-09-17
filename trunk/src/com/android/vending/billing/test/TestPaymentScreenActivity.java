@@ -1,7 +1,6 @@
 package com.android.vending.billing.test;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,6 +11,9 @@ public class TestPaymentScreenActivity extends Activity {
 	public static final String DEVELOPER_PAYLOAD_INTENT_KEY = "DEVELOPER_PAYLOAD";
 	public static final String ITEM_ID_INTENT_KEY = "ITEM_ID";
 	public static final String PACKAGE_NAME_INTENT_KEY = "PACKAGE_NAME";
+	public static final String REQUEST_ID_INTENT_KEY = "REQUEST_ID";
+	
+	private ResponseIntentFactory responseIntentFactory = new ResponseIntentFactory();
 	
 	private Button createTestButton(String text, OnClickListener listener) {
         Button testButton = new Button(this);
@@ -33,6 +35,9 @@ public class TestPaymentScreenActivity extends Activity {
 	private String getCallerPackageName() {
 		return getIntent().getExtras().getString(PACKAGE_NAME_INTENT_KEY);
 	}
+	private long getRequestId() {
+		return getIntent().getExtras().getLong(REQUEST_ID_INTENT_KEY);
+	}
 	
 	private PurchaseStateOrder createOrder() {
 		PurchaseStateOrder order = new PurchaseStateOrder();
@@ -43,8 +48,12 @@ public class TestPaymentScreenActivity extends Activity {
 	}
 	
 	private void notifyAboutOrder(PurchaseStateOrder order) {
+		// request has reached the server
+		this.sendBroadcast(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_OK));
+		
+		// order notification
 		String notificationId = OrderNotificationRepository.getInstance().add(order);
-		broadcastAppNotificationIntent(notificationId);	
+		this.sendBroadcast(responseIntentFactory.createAppNotificationIntent(notificationId));	
 	}
 	
     @Override
@@ -70,16 +79,23 @@ public class TestPaymentScreenActivity extends Activity {
 		});        
         addTestButton(layout, "refund order", new OnClickListener() {
 			public void onClick(View v) {
-				// @todo select order id in a dialog
+				// TODO: select order id in a dialog
 				String orderId = "";
 				
 				PurchaseStateOrder order = PurchaseStateOrderRepository.getInstance().get(orderId);
-				// @todo handle order not found
-
-				order.setPurchaseState(PurchaseStateOrder.STATE_REFUNDED);				
-				notifyAboutOrder(order);
+				if (order != null) {
+					order.setPurchaseState(PurchaseStateOrder.STATE_REFUNDED);				
+					notifyAboutOrder(order);
+				}
 			}
 		});        
+        addTestButton(layout, "service unavailable", new OnClickListener() {
+			public void onClick(View v) {
+				v.getContext().sendBroadcast(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_SERVICE_UNAVAILABLE));
+			}
+		});        
+        
+        // TODO: handle back button with RESULT_USER_CANCELED
         
         this.setContentView(layout);
     }
@@ -89,10 +105,5 @@ public class TestPaymentScreenActivity extends Activity {
     	super.onStart();
     }
     
-	private void broadcastAppNotificationIntent(String notificationId) {
-		Intent intent = new Intent("com.android.vending.billing.IN_APP_NOTIFY");
-		intent.putExtra("notification_id", notificationId);
-		this.sendBroadcast(intent);		
-	}
-    
+   
 }

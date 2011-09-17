@@ -12,24 +12,31 @@ public class OrderNotificationRepository {
 		return instance;
 	}
 	
-	private Map<String, PurchaseStateOrder> notifications = new HashMap<String, PurchaseStateOrder>();
+	private Map<String, PurchaseStateOrder[]> notifications = new HashMap<String, PurchaseStateOrder[]>();
 	
 	private OrderNotificationRepository() {		
 	}
 	
 	public String add(PurchaseStateOrder order) {
+		return add(new PurchaseStateOrder[] { order });
+	}
+	
+	public String add(PurchaseStateOrder[] orders) {
 		String notificationId = (notifications.size() + 1) + "";
-		notifications.put(notificationId, order);	
+		notifications.put(notificationId, orders);	
 		return notificationId;
 	}
 	
-	public PurchaseStateOrder get(String notificationId) {
-		PurchaseStateOrder order = notifications.get(notificationId);
-		if (order == null)
-			return null;
-		order = (PurchaseStateOrder)order.clone();
-		order.setNotificationId(notificationId);
-		return order;
+	public PurchaseStateOrder[] get(String notificationId) {
+		PurchaseStateOrder[] orders = notifications.get(notificationId);
+		if (orders == null)
+			return new PurchaseStateOrder[0];
+		PurchaseStateOrder[] ordersCopy = new PurchaseStateOrder[orders.length];
+		for (int i = 0; i < orders.length; i++) {
+			ordersCopy[i] = (PurchaseStateOrder)orders[i].clone();
+			ordersCopy[i].setNotificationId(notificationId);
+		}
+		return ordersCopy;
 	}
 	
 	public void remove(String notificationId) {

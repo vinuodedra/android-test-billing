@@ -28,4 +28,12 @@ public class PurchaseStateOrderRepository {
 	public PurchaseStateOrder get(String orderId) {
 		return orders.get(orderId);
 	}
+
+	public PurchaseStateOrder[] getAllOrders() {
+		return orders.values().toArray(new PurchaseStateOrder[orders.size()]);		
+	}
+	
+	public PurchaseStateOrder[] getUserManagedPurchases() {
+		return getAllOrders();
+	}
 }
