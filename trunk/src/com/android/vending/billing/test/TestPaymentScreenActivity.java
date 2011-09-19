@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 
 public class TestPaymentScreenActivity extends Activity {
 	public static final String DEVELOPER_PAYLOAD_INTENT_KEY = "DEVELOPER_PAYLOAD";
@@ -76,6 +77,9 @@ public class TestPaymentScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        LayoutParams layoutParams = new LinearLayout.LayoutParams(
+        	LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
         
         addTestButton(layout, "buy item", new OnClickListener() {
 			public void onClick(View v) {
@@ -96,7 +100,6 @@ public class TestPaymentScreenActivity extends Activity {
         addTestButton(layout, "refund the order", new OnClickListener() {
 			public void onClick(View v) {
 				AlertDialog dialog = createOrderSelectionDialog(new android.content.DialogInterface.OnClickListener() {
-					@Override
 					public void onClick(DialogInterface dialog, int which) {						
 						PurchaseStateOrder[] orders = PurchaseStateOrderRepository.getInstance().getAllOrders();
 						PurchaseStateOrder order = orders[which];
@@ -120,7 +123,7 @@ public class TestPaymentScreenActivity extends Activity {
 			}
 		});        
         
-        this.setContentView(layout);
+        this.setContentView(layout, layoutParams);
     }
     
     @Override
