@@ -34,7 +34,8 @@ public class PurchaseDataSigner {
 			
 			Signature signer = Signature.getInstance("SHA1withRSA");
 			signer.initSign(privateKey);
-			signer.update(data.getBytes());
+			// default charset is : com.ibm.icu4jni.charset.CharsetICU[UTF-8]
+			signer.update(data.getBytes("UTF-8"));
 			return Base64.encode(signer.sign());
 		} catch (Exception ex) {
 			return "PurchaseDataSignerFailed";
