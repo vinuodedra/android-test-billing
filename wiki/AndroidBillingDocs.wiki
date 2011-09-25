@@ -2,7 +2,7 @@
 
 = Android In-app Billing documentation =
 
-  * [WhyToHaveService]
+  * [WhyBillingServiceIsNeeded Why do we need a Service class?]
   * [http://developer.android.com/guide/market/billing/index.html In-app Billing]
   * [http://developer.android.com/guide/market/billing/billing_testing.html Testing In-app Billing]
   * [http://developer.android.com/guide/market/billing/billing_reference.html In-app Billing Reference]
