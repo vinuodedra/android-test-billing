@@ -12,6 +12,7 @@ public class OrderNotificationRepository {
 		return instance;
 	}
 	
+	private int notificationIdCounter = 0;
 	private Map<String, PurchaseStateOrder[]> notifications = new HashMap<String, PurchaseStateOrder[]>();
 	
 	private OrderNotificationRepository() {		
@@ -22,7 +23,7 @@ public class OrderNotificationRepository {
 	}
 	
 	public String add(PurchaseStateOrder[] orders) {
-		String notificationId = (notifications.size() + 1) + "";
+		String notificationId = ++notificationIdCounter + "";
 		notifications.put(notificationId, orders);	
 		return notificationId;
 	}
