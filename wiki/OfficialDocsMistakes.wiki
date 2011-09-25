@@ -2,5 +2,22 @@
 
 = Official documentation mistakes =
 
-  # asd
-  # qwe
+Official documentation contains several inconsistencies, which can be resolved by looking at the provided example code.
+
+  # NOTIFY_IDS parameter is the array of strings
+  # The inapp_signed_data JSON in the PURCHASE_STATE_CHANGED notification has the array of orders. Also the array sometimes is not present at all, so they use JSONObject.optJSONArray() to parse it.
+
+The correct inapp_signed_data JSON example would be like this :
+
+<code language="json">
+{ "nonce" : 1836535032137741465,
+  "orders" : [
+    { "notificationId" : "android.test.purchased",
+      "orderId" : "transactionId.android.test.purchased",
+      "packageName" : "com.example.dungeons",
+      "productId" : "android.test.purchased",
+      "developerPayload" : "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ",
+      "purchaseTime" : 1290114783411,
+      "purchaseState" : 0 }]
+}
+</code>
