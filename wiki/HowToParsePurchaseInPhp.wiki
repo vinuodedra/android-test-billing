@@ -4,7 +4,7 @@
 
 The purchase state JSON contains 2 long values : "nonce" and "purchaseTime", which will overflow the PHP integer type on 32-bit OS if you try using 
 <code language="php">
-$purchase = json_decode($json);
+$purchase = json_decode($json); // long values will be converted to floats
 </code>
 
 If you have PHP >= 5.4.0, you can use :
