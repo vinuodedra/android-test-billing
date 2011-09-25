@@ -1,7 +1,8 @@
-#summary Official Android In-app Billing documentation.
+#summary Android In-app Billing documentation.
 
-= Official Android In-app Billing documentation =
+= Android In-app Billing documentation =
 
+  * [WhyToHaveService]
   * [http://developer.android.com/guide/market/billing/index.html In-app Billing]
   * [http://developer.android.com/guide/market/billing/billing_testing.html Testing In-app Billing]
   * [http://developer.android.com/guide/market/billing/billing_reference.html In-app Billing Reference]
