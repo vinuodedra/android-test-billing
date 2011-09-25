@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="AndroidTestBilling" default="package">
-  <property name="version" value="0.2" />
+  <property name="version" value="0.3" />
   <target name="package">
     <jar destfile="android-test-billing-${version}.jar" basedir=".">
       <include name="license.txt"/>
