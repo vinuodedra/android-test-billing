@@ -7,3 +7,5 @@
   * [http://developer.android.com/guide/market/billing/billing_testing.html Testing In-app Billing]
   * [http://developer.android.com/guide/market/billing/billing_reference.html In-app Billing Reference]
   * [OfficialDocsMistakes Official documentation mistakes]
+  * [HowToParsePurchaseInPhp How to parse the purchase state in PHP?]
+  * [HowToValidatePurchaseInPhp How to validate the purchase in PHP?]
