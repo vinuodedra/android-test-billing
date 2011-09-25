@@ -1,0 +1,13 @@
+#summary How to parse the purchase state in PHP?
+
+= How to parse the purchase state in PHP? =
+
+The purchase state JSON contains 2 long values : "nonce" and "purchaseTime", which will overflow the PHP integer type if you try using 
+<code language="php">
+$purchase = json_decode($json);
+</code>
+
+If you have PHP >= 5.4.0, you can use :
+<code language="php">
+$purchase = json_decode($json, false, 512, JSON_BIGINT_AS_STRING);
+</code>
