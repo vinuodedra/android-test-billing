@@ -1,0 +1,5 @@
+#summary Why do we need a custom Service class?
+
+= Why do we need a custom Service class? =
+
+Official documentation advices to have a custom Service class to make requests to the In-app billing service.
