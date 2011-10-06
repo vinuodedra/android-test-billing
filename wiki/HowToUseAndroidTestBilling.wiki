@@ -20,8 +20,7 @@ If you want to be able to debug, it's better to reference android-test-billing s
 
 == 2. Edit AndroidManifest.xml ==
 Add the following to AndroidManifest.xml :
-<code language="xml">
-{{{
+<code language="xml">{{{
         <activity android:name="com.android.vending.billing.test.TestPaymentScreenActivity" />
 }}}
 </code>
@@ -29,9 +28,9 @@ This registers the test payment screen.
 
 == 3. Create the test service object ==
 As simple as :
-<code language="java">
+<code language="java">{{{
 	private IMarketBillingService createMarketBillingService() {
 		return new com.android.vending.billing.test.TestMarketBillingService(this);
 	}
-
+}}}
 </code>
