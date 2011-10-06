@@ -2,10 +2,10 @@
 
 = How to setup Android Test Billing in your project =
 
-  # reference the library
-  # edit AndroidManifest.xml
-  # create the test service object
-  # add the test code
+  # Reference the library
+  # Edit AndroidManifest.xml
+  # Create the test service object
+  # Add the test code
 
 == 1. Reference the library ==
 You have 2 options : reference the source code or reference the jar library.
@@ -17,3 +17,10 @@ The simplest is to reference the jar :
 If you want to be able to debug, it's better to reference android-test-billing source code. Follow the instructions http://code.google.com/p/android-test-billing/source/checkout to download the code.
   * Checkout the code to your Eclipse workspace directory.
   * Add a reference from your main project (Project menu -> Properties -> Android -> Library -> Add)
+
+== 2. Edit AndroidManifest.xml ==
+Add the following to AndroidManifest.xml :
+<code language="xml">
+        <activity android:name="com.android.vending.billing.test.TestPaymentScreenActivity" />
+</code>
+This registers the test payment screen.
