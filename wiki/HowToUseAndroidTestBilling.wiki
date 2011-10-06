@@ -14,6 +14,6 @@ The simplest is to reference the jar :
   * Download the latest distribution package from http://code.google.com/p/android-test-billing/downloads/list and copy it to your "lib" directory
   * Reference the jar in your Eclipse project (Project menu -> Properties -> Java Build Path -> Libraries -> Add JARs...)
 
-If you want to be able to debug, it's better to reference by the source code. Follow the instructions http://code.google.com/p/android-test-billing/source/checkout to download the code.
+If you want to be able to debug, it's better to reference android-test-billing source code. Follow the instructions http://code.google.com/p/android-test-billing/source/checkout to download the code.
   * Checkout the code to your Eclipse workspace directory.
   * Add a reference from your main project (Project menu -> Properties -> Android -> Library -> Add)
