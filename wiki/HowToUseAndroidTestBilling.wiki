@@ -20,7 +20,9 @@ If you want to be able to debug, it's better to reference android-test-billing s
 
 == 2. Edit AndroidManifest.xml ==
 Add the following to AndroidManifest.xml :
-<code language="xml">{{{
+<code language="xml">
+{{{
         <activity android:name="com.android.vending.billing.test.TestPaymentScreenActivity" />
-}}}</code>
+}}}
+</code>
 This registers the test payment screen.
