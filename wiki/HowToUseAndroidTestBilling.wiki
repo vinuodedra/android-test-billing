@@ -36,3 +36,9 @@ As simple as :
 	}
 }}}
 </code>
+
+== 4. Add the test code ==
+Add the test code as described in the documentation ([http://developer.android.com/guide/market/billing/billing_integrate.html] Implementing In-app Billing). You will need to create :
+  * a payment Activity (the screen where you select what to buy and proceed to the checkout)
+  * a BroadcastReceiver (it receives the notifications from the Android Market application)
+  * and a Service, which connects BroadcastReceiver and the payment Activity
