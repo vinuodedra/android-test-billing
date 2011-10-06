@@ -23,7 +23,8 @@ Add the following to AndroidManifest.xml :
 <code language="xml">
 {{{
         <activity android:name="com.android.vending.billing.test.TestPaymentScreenActivity" />
-}}}</code>
+}}}
+</code>
 This registers the test payment screen.
 
 == 3. Create the test service object ==
@@ -33,4 +34,5 @@ As simple as :
 	private IMarketBillingService createMarketBillingService() {
 		return new com.android.vending.billing.test.TestMarketBillingService(this);
 	}
-}}}</code>
+}}}
+</code>
