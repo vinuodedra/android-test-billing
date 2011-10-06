@@ -2,6 +2,18 @@
 
 = How to setup Androit Test Billing in your project =
 
-  * step 1
-  * step 2
-  * step 3
+  # reference the library
+  # edit AndroidManifest.xml
+  # create the test service object
+  # add the test code
+
+== 1. Reference the library ==
+You have 2 options : reference the source code or reference the jar library.
+
+The simplest is to reference the jar :
+  * Download the latest distribution package from http://code.google.com/p/android-test-billing/downloads/list and copy it to your "lib" directory
+  * Reference the jar in your Eclipse project (Project menu -> Properties -> Java Build Path -> Libraries -> Add JARs...)
+
+If you want to be able to debug, it's better to reference by the source code. Follow the instructions http://code.google.com/p/android-test-billing/source/checkout to download the code.
+  * Checkout the code to your Eclipse workspace directory.
+  * Add a reference from your main project (Project menu -> Properties -> Android -> Library -> Add)
