@@ -7,3 +7,4 @@ In order to do that you need to :
 
   # include .aidl
   # change service creation code
+  # follow the documentation steps about signing and publication
