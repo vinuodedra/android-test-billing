@@ -1,4 +1,4 @@
-#summary How to setup Androit Test Billing in your project.
+#summary How to setup Android Test Billing in your project.
 
 = How to setup Androit Test Billing in your project =
 
