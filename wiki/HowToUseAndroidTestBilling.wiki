@@ -1,6 +1,6 @@
 #summary How to setup Android Test Billing in your project.
 
-= How to setup Androit Test Billing in your project =
+= How to setup Android Test Billing in your project =
 
   # reference the library
   # edit AndroidManifest.xml
