@@ -20,5 +20,5 @@ import android.os.Bundle;
 
 public interface IMarketBillingService {
     /** Given the arguments in bundle form, returns a bundle for results. */
-    Bundle sendBillingRequest(Bundle bundle);
+    Bundle sendBillingRequest(Bundle bundle) throws android.os.RemoteException;
 }

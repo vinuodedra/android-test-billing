@@ -3,7 +3,9 @@ package com.android.vending.billing.test;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -52,11 +54,20 @@ public class TestPaymentScreenActivity extends Activity {
 	
 	private void notifyAboutOrder(PurchaseStateOrder order) {
 		// request has reached the server
-		this.sendBroadcast(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_OK));
+		sendBroadcastDelayed(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_OK));
 		
 		// order notification
 		String notificationId = OrderNotificationRepository.getInstance().add(order);
-		this.sendBroadcast(responseIntentFactory.createAppNotificationIntent(notificationId));	
+		sendBroadcastDelayed(responseIntentFactory.createAppNotificationIntent(notificationId));	
+	}
+	
+	private void sendBroadcastDelayed(final Intent intent) {
+		Handler currentHandler = new Handler();
+		currentHandler.postDelayed(new Runnable() {					
+			public void run() {
+				TestPaymentScreenActivity.this.sendBroadcast(intent);						
+			}
+		}, 3000);		
 	}
 	
 	private AlertDialog createOrderSelectionDialog(android.content.DialogInterface.OnClickListener listener) {
@@ -87,6 +98,7 @@ public class TestPaymentScreenActivity extends Activity {
 				order.setPurchaseState(PurchaseStateOrder.STATE_PURCHASED);
 				PurchaseStateOrderRepository.getInstance().add(order);
 				notifyAboutOrder(order);
+				TestPaymentScreenActivity.this.finish();
 			}
 		});        
         addTestButton(layout, "cancel the order", new OnClickListener() {
@@ -95,6 +107,7 @@ public class TestPaymentScreenActivity extends Activity {
 				order.setPurchaseState(PurchaseStateOrder.STATE_CANCELED);
 				PurchaseStateOrderRepository.getInstance().add(order);
 				notifyAboutOrder(order);
+				TestPaymentScreenActivity.this.finish();
 			}
 		});        
         addTestButton(layout, "refund the order", new OnClickListener() {
@@ -106,6 +119,7 @@ public class TestPaymentScreenActivity extends Activity {
 						if (order != null) {
 							order.setPurchaseState(PurchaseStateOrder.STATE_REFUNDED);				
 							notifyAboutOrder(order);
+							TestPaymentScreenActivity.this.finish();
 						}
 					}
 				});
@@ -114,12 +128,14 @@ public class TestPaymentScreenActivity extends Activity {
 		});        
         addTestButton(layout, "service unavailable", new OnClickListener() {
 			public void onClick(View v) {
-				v.getContext().sendBroadcast(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_SERVICE_UNAVAILABLE));
+				sendBroadcastDelayed(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_SERVICE_UNAVAILABLE));
+				TestPaymentScreenActivity.this.finish();
 			}
 		});        
         addTestButton(layout, "abandon checkout", new OnClickListener() {
 			public void onClick(View v) {
-				v.getContext().sendBroadcast(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_USER_CANCELED));
+				sendBroadcastDelayed(responseIntentFactory.createResponseCodeIntent(getRequestId(), ResponseCode.RESULT_USER_CANCELED));
+				TestPaymentScreenActivity.this.finish();
 			}
 		});        
         
