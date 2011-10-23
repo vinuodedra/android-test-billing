@@ -27,7 +27,7 @@ interface IMarketBillingService {
 </code>
 
 You can download the file here :
-http://marketbilling.googlecode.com/hg-history/release_1/src/com/android/vending/billing/IMarketBillingService.aidl
+[http://marketbilling.googlecode.com/hg-history/release_1/src/com/android/vending/billing/IMarketBillingService.aidl IMarketBillingService.aidl]
 
 == 3. Change service creation code ==
 The real billing service object is created asynchronously : first you make a call to the Context.bindService() and pass a callback (ServiceConnection interface), then you receive a service instance through the callback. This may change your code.
