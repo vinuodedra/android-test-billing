@@ -21,7 +21,7 @@ Include IMarketBillingService.aidl file into the project to the src\com\android\
 package com.android.vending.billing;
 import android.os.Bundle;
 interface IMarketBillingService {
-    /** Given the arguments in bundle form, returns a bundle for results. */
+    // Given the arguments in bundle form, returns a bundle for results.
     Bundle sendBillingRequest(in Bundle bundle);
 }
 </code>
