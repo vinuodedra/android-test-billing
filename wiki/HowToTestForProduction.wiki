@@ -5,6 +5,7 @@
 When you have finished testing on the emulator, you want to switch to the real API.
 In order to do that you need to :
 
-  # include .aidl
+  # remove the reference on the android-test-billing library from the project
+  # include IMarketBillingService.aidl to the src\com\android\vending\billing directory
   # change service creation code
   # follow the documentation steps about signing and publication
