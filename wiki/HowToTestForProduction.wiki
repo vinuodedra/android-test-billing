@@ -8,7 +8,7 @@ In order to do that you need to :
   # remove the android-test-billing library reference
   # include IMarketBillingService.aidl 
   # change service creation code
-  # sign and publish your application for testing
+  # sign and upload your application for testing
   # test your application
 
 == 1. Remove the library reference ==
@@ -54,9 +54,10 @@ if (!bindResult) {
 }}}
 </code>
 
-== 4. Sign and publish your application for testing ==
+== 4. Sign and upload your application for testing ==
 Follow the documentation steps about signing and publication :
 [http://developer.android.com/guide/publishing/app-signing.html Signing Your Applications]
+Sign the application and upload it to the Android Market. You can leave it "Unpublished".
 
 == 5. Test your application ==
 First test with predefined "test" product items, then test with the real products.
