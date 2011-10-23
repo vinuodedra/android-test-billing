@@ -5,7 +5,36 @@
 When you have finished testing on the emulator, you want to switch to the real API.
 In order to do that you need to :
 
-  # remove the reference on the android-test-billing library from the project
-  # include IMarketBillingService.aidl to the src\com\android\vending\billing directory
+  # remove the android-test-billing library reference
+  # include IMarketBillingService.aidl 
   # change service creation code
   # follow the documentation steps about signing and publication
+
+== 1. Remove the library reference ==
+Follow the same steps as you did to reference the library, and remove the reference on the android-test-billing library from the project.
+
+== 2. Include IMarketBillingService.aidl ==
+Include IMarketBillingService.aidl file into the project to the src\com\android\vending\billing directory.
+
+== 3. Change service creation code ==
+The real billing service object is created asynchronously : first you make a call to the Context.bindService() and pass a callback (ServiceConnection interface), then you receive a service instance through the callback. This may change your code.
+This is the code example :
+<code language="java">
+{{{
+		Intent billingServiceBindIntent = new Intent("com.android.vending.billing.MarketBillingService.BIND"); 
+
+		boolean bindResult = context.bindService(billingServiceBindIntent,
+			new ServiceConnection() {				
+				public void onServiceConnected(ComponentName name, IBinder serviceBinder) {
+					IMarketBillingService service = IMarketBillingService.Stub.asInterface(serviceBinder));
+					// user the service ...
+				}
+				public void onServiceDisconnected(ComponentName name) {
+					// handle the service disconnection ...			
+				}
+			}, Context.BIND_AUTO_CREATE);
+		if (!bindResult) {
+			// handle bindService() error
+		}
+}}}
+</code>
