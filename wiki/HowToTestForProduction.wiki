@@ -55,7 +55,10 @@ if (!bindResult) {
 </code>
 
 == 4. Sign and publish your application for testing ==
-Follow the documentation steps about signing and publication.
+Follow the documentation steps about signing and publication :
+[http://developer.android.com/guide/publishing/app-signing.html Signing Your Applications]
 
 == 5. Test your application ==
-Follow the documentation about testing your application.
+First test with predefined "test" product items, then test with the real products.
+Follow the documentation about testing your application : 
+[http://developer.android.com/guide/market/billing/billing_testing.html Testing In-app Billing]
