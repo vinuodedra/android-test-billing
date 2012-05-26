@@ -1,0 +1,4 @@
+#summary Known projects which used android-test-billing library
+
+  * [http://www.horer.fr Horer.fr - horaires de RER] - timetables of local Parisien trains
+  * [http://www.bestparking.com BestParking.com] - parking rates and locations catalog
