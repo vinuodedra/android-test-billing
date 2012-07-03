@@ -42,3 +42,5 @@ Add the test code as described in the documentation ([http://developer.android.c
   * a payment Activity (the screen where you select what to buy and proceed to the checkout)
   * a BroadcastReceiver (it receives the notifications from the Android Market application)
   * and a Service, which connects BroadcastReceiver and the payment Activity
+
+Don't add AIDL file to your project.
